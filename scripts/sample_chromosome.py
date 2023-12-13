@@ -71,15 +71,13 @@ def sample_raw_counts_chrom(samples, coverages, sample_names, chromosome, snps, 
     p_snp_positions = np.array(sorted(p_snps.pos))
     
     # add 0.01 to ensure traditional rounding (0.5 goes up) rather than default rounding (closest even number)
-    p_snp_thresholds = np.concatenate([#[1], 
-                                   np.round((p_snp_positions[1:] + p_snp_positions[:-1] + 0.01)  / 2), 
-                                   [cent_start]]).astype(int)
+    p_snp_thresholds = np.concatenate([np.trunc(np.vstack([p_snp_positions[:-1], p_snp_positions[1:]]).mean(axis=0)),
+                                       [cent_start]]).astype(np.uint32)                                
     
     q_snps = snps[snps.pos >= cent_end]
     q_snp_positions = np.array(sorted(q_snps.pos))
-    q_snp_thresholds = np.concatenate([[cent_end], 
-                                   np.round((q_snp_positions[1:] + q_snp_positions[:-1] + 0.01) / 2), 
-                                   [chr_end]]).astype(int)
+    q_snp_thresholds = np.concatenate([[cent_end], np.trunc(np.vstack([q_snp_positions[:-1], q_snp_positions[1:]]).mean(axis=0)),
+                                       [chr_end]]).astype(np.uint32)
     
     ## Combine with fixed-width thresholds
     p_thresholds = [int(a) for a in sorted(set(p_snp_thresholds).union(set([cent_start])).union(set(np.arange(0, cent_start, bin_width))))]
@@ -197,7 +195,7 @@ def aggregate_reads_hatchet1(raw_counts, sample_names, cent_start, cent_end, chr
     h1df = pd.DataFrame(h1_rows, columns = ['chromosome', 'start', 'end', 'sample', 'reads'])
     return h1df
 
-def aggregate_reads_hatchet2(raw_counts, sample_names, p_snp_thresholds, q_snp_thresholds):
+def aggregate_reads_hatchet2(raw_counts, sample_names, p_snp_thresholds, q_snp_thresholds):    
     h2_p_thresholds = np.concatenate([[1], p_snp_thresholds])    
     h2_q_thresholds = q_snp_thresholds
 
@@ -308,6 +306,16 @@ def main(genome, chromosome, snps, sample_mixtures, tumor_coverage, normal_cover
             assert np.all(mix >= 0), f"Mixture must be non-negative: {mix}"
             mixtures.append(mix)
     sample_names = [mixture2name(m) for m in mixtures]
+    
+    sorted_order = np.argsort(sample_names)
+    # hacky workaround to keep these as lists
+    sn = []
+    ms = []
+    for idx in sorted_order:
+        sn.append(sample_names[idx])    
+        ms.append(mixtures[idx])
+    sample_names = sn
+    mixtures = ms
 
     # Generate sample dataframes
     samples = [add_fcn(genome, mixture) for mixture in mixtures]

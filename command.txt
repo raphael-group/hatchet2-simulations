@@ -1,0 +1,1 @@
+snakemake --profile slurm --snakefile Snakefile --jobs 10 --latency-wait 30

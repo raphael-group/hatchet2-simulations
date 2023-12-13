@@ -1,5 +1,5 @@
 chromosomes: ['chr20', 'chr21']
-manifest: 'manifest.tsv'
+manifest: 'test.tsv'
 
 sim_data_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/data'
 sim_results_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/results/'
