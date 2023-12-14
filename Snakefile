@@ -9,6 +9,17 @@ sim_data_dir = config['sim_data_dir']
 sim_results_dir = config['sim_results_dir']
 intermediate_dir = os.path.join(sim_data_dir, 'intermediate')
 
+# HATCHet2 binning parameters
+min_snpcov_reads = 1500
+min_total_reads = 1500
+
+# solving parameters
+min_clones = 2
+max_clones = 4
+diploid_cmax = 6
+tetraploid_cmax = 14
+
+
 # global parameters
 genome_version = 'hg19'
 normal_name = 'normal'
@@ -39,6 +50,16 @@ rule all:
         # final results
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{simulation_id}', 'results', 'best.bbc.ucn'),
             hatchet_version=hatchet_versions, simulation_id=simulation_ids),
+
+        # final plots
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-mixtures.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-allelecn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profiles.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-totalcn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profilesreduced.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-allelecn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-totalcn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-subclonality.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
 
 include: "rules/generate_simulations.smk"
 include: "rules/run_methods.smk"
