@@ -112,7 +112,7 @@ def mixture2name(mixture):
     numbered from 0
     '''
     normal_token = f'0{str(int(mixture[0] * 100)).rstrip("0")}normal'
-    return 'bulk' + '_'.join([f'0{str(int(a * 100)).rstrip("0")}clone{i}' for i, a in enumerate(mixture[1:])] +
+    return 'bulk_' + '_'.join([f'0{str(int(a * 100)).rstrip("0")}clone{i}' for i, a in enumerate(mixture[1:])] +
                             [normal_token])
 
 def aggregate_counts_hatchet1(raw_counts, sample_names, chromosome, cent_start, cent_end, chr_end, bin_width):

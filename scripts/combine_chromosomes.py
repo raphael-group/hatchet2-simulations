@@ -53,7 +53,7 @@ def main(intermediate_dir, hatchet1_dir, hatchet2_dir):
     totalcounts = tc[0].copy()
     if len(tc) > 0:
         for x in tc[1:]:
-            assert totalcounts.index.equals(x.index)
+            assert totalcounts.index.equals(x.index), (totalcounts.index, x.index)
             totalcounts.iloc[:, 0] += x.iloc[:, 0]
     totalcounts.to_csv(os.path.join(hatchet1_dir, 'rdr', 'total.tsv'), header = False, sep = '\t')
     totalcounts.to_csv(os.path.join(hatchet2_dir, 'rdr', 'total.tsv'), header = False, sep = '\t')

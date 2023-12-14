@@ -21,24 +21,24 @@ hatchet_versions = ['hatchet1', 'hatchet2']
 
 rule all:
     input:
+        # input files
+        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
+        
+        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'tumor.1bed'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'normal.1bed'), id=simulation_ids),
+        
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'samples.txt'), id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', '{chromosome}.total.gz'), chromosome=chromosomes, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', '{chromosome}.thresholds.gz'), chromosome=chromosomes, id=simulation_ids),
+
+        # final results
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{simulation_id}', 'results', 'best.bbc.ucn'),
             hatchet_version=hatchet_versions, simulation_id=simulation_ids),
-        #os.path.join(sim_results_dir, 'hatchet2', '0', 'results', 'best.bbc.ucn'),
-        #expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'results', 'best.bbc.ucn'), id=simulation_ids),
-        #expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'results', 'best.bbc.ucn'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
-        
-        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'tumor.1bed'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'normal.1bed'), id=simulation_ids),
-        
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'samples.txt'), id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', '{chromosome}.total.gz'), chromosome=chromosomes, id=simulation_ids),
-        # expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', '{chromosome}.thresholds.gz'), chromosome=chromosomes, id=simulation_ids),
 
 include: "rules/generate_simulations.smk"
 include: "rules/run_methods.smk"

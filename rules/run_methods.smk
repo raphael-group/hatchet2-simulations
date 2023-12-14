@@ -33,6 +33,8 @@ rule run_hatchet:
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'hatchet.ini'),
     params:
         work_dir = os.path.join(sim_results_dir, '{hatchet_version}', '{id}'),
+        stdout = os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'log.out'),
+        stderr = os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'log.err'),
     output:
         result=os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'results', 'best.bbc.ucn'),
     resources:
@@ -42,5 +44,5 @@ rule run_hatchet:
     shell:
         """
         cd {params.work_dir}
-        hatchet run {input} > {output.stdout} 2> {output.stderr}
+        hatchet run {input} > {params.stdout} 2> {params.stderr}
         """
