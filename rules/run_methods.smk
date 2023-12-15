@@ -52,5 +52,6 @@ rule run_hatchet:
     shell:
         """
         cd {params.work_dir}
+        module load gurobi
         hatchet run {input} > {params.stdout} 2> {params.stderr}
         """
