@@ -52,14 +52,14 @@ rule all:
             hatchet_version=hatchet_versions, simulation_id=simulation_ids),
 
         # final plots
-        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-mixtures.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        #expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-mixtures.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        #expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-subclonality.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-allelecn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
-        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profiles.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-totalcn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profiles.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profilesreduced.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-allelecn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-totalcn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
-        expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-subclonality.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
 
 include: "rules/generate_simulations.smk"
 include: "rules/run_methods.smk"

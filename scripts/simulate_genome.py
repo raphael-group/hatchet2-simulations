@@ -40,6 +40,7 @@ def inject_events(genome, event_sizes, chr2centro, seed = 0,
     clone_cols = [f'clone{i}' for i in range(n_clones)]
 
     unique_ascns = genome[clone_cols].value_counts().keys().values
+    print(clone_cols)
     genome_by_chrom = {ch:df.reset_index(drop = True) for ch, df in genome.groupby('chr')}
     new_genome = {}
 
@@ -66,12 +67,14 @@ def inject_events(genome, event_sizes, chr2centro, seed = 0,
                     break
 
             # randomly sample cn state for the event
-            prohib_states = df[(df.start == start) | (df.end == start)][['clone0', 'clone1']].values
+            prohib_states = df[(df.start == start) | (df.end == start)][clone_cols].values
             assert len(prohib_states) == 2 or start == 0
 
+            print(prohib_states)
             while True:
                 state_idx = np.random.randint(len(unique_ascns))
                 state = list(unique_ascns[state_idx])
+                print(state)
 
                 # reroll if it's the same as its housing segment or neighboring segment
                 if state not in prohib_states:

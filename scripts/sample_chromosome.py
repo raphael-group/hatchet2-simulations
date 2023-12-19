@@ -235,7 +235,7 @@ def aggregate_reads_hatchet2(raw_counts, sample_names, p_snp_thresholds, q_snp_t
     return h2_p_arr, h2_q_arr
 
 def snp2fcn(r, mixture, genome):
-    bin = genome[(genome.chr == r.chr) & (genome.start <= r.pos) & (genome.end >= r.pos)]
+    bin = genome[(genome.chr == r.chr) & (genome.start <= r.pos) & (genome.end > r.pos)]
     assert len(bin) == 1, (r.chr, r.pos, len(bin))
     a, b = split_cn(bin.iloc[0])
 
@@ -302,7 +302,7 @@ def main(genome, chromosome, snps, sample_mixtures, tumor_coverage, normal_cover
     with open(sample_mixtures, 'r') as f:
         for line in f:
             mix = np.array([float(a) for a in line.strip().split(',')])
-            assert np.sum(mix) == 1, f"Mixture must sum to 1: {mix}"
+            assert np.isclose(np.sum(mix), 1), f"Mixture must sum to 1: {mix}"
             assert np.all(mix >= 0), f"Mixture must be non-negative: {mix}"
             mixtures.append(mix)
     sample_names = [mixture2name(m) for m in mixtures]

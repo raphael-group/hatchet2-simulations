@@ -1,1 +1,1 @@
-snakemake --profile slurm --snakefile Snakefile --jobs 10 --latency-wait 30
+snakemake --profile slurm --snakefile Snakefile --latency-wait 120 --configfile config.yaml --jobs 2000 --keep-incomplete

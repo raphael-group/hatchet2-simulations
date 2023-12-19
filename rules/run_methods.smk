@@ -37,16 +37,14 @@ rule run_hatchet:
         stderr = os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'log.err'),
     output:
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'results', 'best.bbc.ucn'),
-        os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-mixtures.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-allelecn.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profiles.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-clones-totalcn.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profilesreduced.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-allelecn.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-totalcn.pdf'),
-        os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-subclonality.pdf'),
     resources:
-        mem_mb=32000,
+        mem_mb=64000,
         threads=24,
         time_min=1320
     shell:
