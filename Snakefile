@@ -8,6 +8,7 @@ manifest.id = manifest.id.astype(str)
 sim_data_dir = config['sim_data_dir']
 sim_results_dir = config['sim_results_dir']
 intermediate_dir = os.path.join(sim_data_dir, 'intermediate')
+analysis_dir = '/n/fs/ragr-research/projects/hatchet2-results/newsims/analysis'
 
 # HATCHet2 binning parameters
 min_snpcov_reads = 1500
@@ -60,6 +61,11 @@ rule all:
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-profilesreduced.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-allelecn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
         expand(os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-totalcn.pdf'), hatchet_version = hatchet_versions, id=simulation_ids),
+
+        # analysis files
+        expand(os.path.join(analysis_dir, 'joint_tables', '{hatchet_version}__{id}.tsv'), hatchet_version = hatchet_versions, id=simulation_ids),
+        expand(os.path.join(analysis_dir, 'metrics', '{hatchet_version}__{id}.json'), hatchet_version = hatchet_versions, id=simulation_ids),
+
 
 include: "rules/generate_simulations.smk"
 include: "rules/run_methods.smk"

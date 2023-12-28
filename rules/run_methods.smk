@@ -44,12 +44,23 @@ rule run_hatchet:
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-allelecn.pdf'),
         os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'summary', 'intratumor-copynumber-totalcn.pdf'),
     resources:
-        mem_mb=64000,
+        mem_mb=32000,
         threads=24,
-        time_min=1320
+        time_min=1440
     shell:
         """
         cd {params.work_dir}
         module load gurobi
         hatchet run {input} > {params.stdout} 2> {params.stderr}
+        """
+
+rule analyze_results:
+    input:
+        result_file=os.path.join(sim_results_dir, '{hatchet_version}', '{id}', 'results', 'best.bbc.ucn'),
+    output:
+        joint_df=os.path.join(analysis_dir, 'joint_tables', '{hatchet_version}__{id}.tsv'),
+        metrics_json=os.path.join(analysis_dir, 'metrics', '{hatchet_version}__{id}.json'),
+    shell:
+        """
+        python scripts/analyze_results.py {input} --joint_df_out {output.joint_df} --stats_out {output.metrics_json}
         """
