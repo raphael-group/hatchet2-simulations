@@ -47,6 +47,8 @@ rule run_hatchet:
         mem_mb=32000,
         threads=24,
         time_min=1440
+    benchmark:
+        "/n/fs/ragr-research/projects/hatchet2-results/newsims/benchmarking/run-hatchet/{hatchet_version}__{id}.tsv"
     shell:
         """
         cd {params.work_dir}
