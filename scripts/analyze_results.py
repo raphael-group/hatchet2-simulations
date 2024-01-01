@@ -256,14 +256,16 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     e_small = ascn_error_per_base(genome, bbc, max_gt_segment_size = 1e6)
     pra_small = precision_recall(joint, max_gt_segment_size = 1e6)
 
-    tkns = simkey.split('_')
-    dataset_id = tkns[1]
-    liquidsolid = tkns[2]    
-    n_clones = int(tkns[3][0])
-    n_samples = int(tkns[4][0])
-    mixture_id = int(tkns[5])
-    events_id = tkns[6][-1]
-    seed = int(tkns[7])
+    tkns = [a for a in simkey.split('_') if len(a) > 0] # account for double-underscore and single-underscore
+    if tkns[0][0] == 'n':
+        tkns = tkns[1:]
+    dataset_id = tkns[0]
+    liquidsolid = tkns[1]    
+    n_clones = int(tkns[2][0])
+    n_samples = int(tkns[3][0])
+    mixture_id = int(tkns[4])
+    events_id = tkns[5][-1]
+    seed = int(tkns[6])
     
     method = results_file.split(os.sep)[-4]
     
