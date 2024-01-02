@@ -34,6 +34,15 @@ def _get_prop_focal_mirrored(wildcards):
     assert len(row) == 1, (wildcards.id, len(row))
     return row.iloc[0].prop_focal_mirrored
 
+def _get_prop_simplify(wildcards):
+    row = manifest[manifest.id == wildcards.id]
+    assert len(row) == 1, (wildcards.id, len(row))
+    row = row.iloc[0]
+    if 'prop_simplify' in row:
+        return row.prop_simplify
+    else:
+        return 0
+
 rule simulate_genome:
     input:
         genome_file=_get_genome_file,
@@ -42,11 +51,12 @@ rule simulate_genome:
         seed=_get_seed,
         prop_mirrored=_get_prop_mirrored,
         prop_focal_mirrored=_get_prop_focal_mirrored,
+        prop_simplify=_get_prop_simplify,
     output:
         os.path.join(sim_data_dir, 'simulated_genome{id}.tsv'),
     shell: 
         """
-        python3 scripts/simulate_genome.py {input.genome_file} --event_sizes {params.events_string} --prop_mirrored {params.prop_mirrored} --prop_focal_mirrored {params.prop_focal_mirrored} --genome_version {genome_version} --seed {params.seed} --output {output}
+        python3 scripts/simulate_genome.py {input.genome_file} --event_sizes {params.events_string} --prop_mirrored {params.prop_mirrored} --prop_focal_mirrored {params.prop_focal_mirrored} --prop_simplify {params.prop_simplify} --genome_version {genome_version} --seed {params.seed} --output {output}
         """
 
 rule sample_chromosome:

@@ -112,21 +112,97 @@ def inject_events(genome, event_sizes, chr2centro, seed = 0,
         
     return pd.concat(new_genome.values()).reset_index(drop = True)
 
+def simplify_genome(genome, prop_remove = 0.5):
+    # Simplify the genome by removing a proportion of segments and extending neighboring segments
+    cn_cols = genome.columns[3:]
+
+    new_genome = []
+    for ch, df in genome.groupby('chr'):
+        if len(df) <= 3:
+            new_genome.append(df)
+        else:
+            to_remove = sorted(np.random.choice(np.arange(len(df)), replace=False, size=int(len(df) * prop_remove)))
+
+            new_segments = []
+            to_delete = set()
+            for i in to_remove:
+                if i in to_delete:
+                    continue
+
+                df = df.reset_index(drop = True)
+                to_delete.add(i)
+                current = df.iloc[i]
+                if i < len(df) - 1 and not all(j in to_delete for j in range(i, len(df))):
+                    j = i + 1
+                    while j in to_delete:
+                        # keep looking later
+                        j += 1
+
+                    # if it's not the last bin, extend the following segment
+                    successor = df.iloc[j]
+                    new_start = current.start
+                    new_end = successor.end
+                    new_states = successor[cn_cols]
+                    to_delete.add(j)
+                else:
+                    # extend the preceding segment
+                    j = i - 1
+                    while j in to_delete:
+                        # keep looking earlier
+                        j -= 1
+
+                    predecessor = df.iloc[j]
+                    new_start = predecessor.start
+                    new_end = current.end
+                    new_states = predecessor[cn_cols]
+                    to_delete.add(j)
+                new_segments.append([ch, new_start, new_end, *new_states])
+            new_chromosome = pd.concat([df.drop(index=list(to_delete)), 
+                   pd.DataFrame(new_segments, columns = df.columns)]).sort_values(by = ['chr', 'start']).reset_index(drop = True)
+            
+            # check for adjacent segments with the same states and merge segments
+            merge_sets = []
+            for i in range(len(new_chromosome) - 1):
+                my_set = set()
+                j = i + 1
+                while j < len(new_chromosome) and np.all(new_chromosome.iloc[i][cn_cols] == new_chromosome.iloc[j][cn_cols]):
+                    my_set.add(i)
+                    my_set.add(j)
+                    j += 1
+                if len(my_set) > 0:
+                    merge_sets.append(my_set)
+
+            collapsed_segments = []
+            to_delete = set()
+            for s in merge_sets:
+                to_delete = to_delete.union(s)
+                s = sorted(s)
+                collapsed_segments.append([ch, new_chromosome.iloc[s[0]].start, new_chromosome.iloc[s[-1]].end, 
+                               *new_chromosome.iloc[s[0]][cn_cols]])
+            new_chromosome = pd.concat([new_chromosome.drop(index=list(to_delete)), 
+                   pd.DataFrame(collapsed_segments, columns = df.columns)]).sort_values(by = ['chr', 'start'])
+            new_genome.append(new_chromosome)
+            
+    return pd.concat(new_genome).reset_index(drop = True)
+
 @click.command()
 @click.argument('orig_genome')
 @click.option('--event_sizes', help = 'Comma-separated list of focal event sizes to inject')
 @click.option('--prop_mirrored', help = 'Proportion of ALL segments that are mirrored', type=float, default=0.2)
 @click.option('--prop_focal_mirrored', help = 'Proportion of injected focal segments that are mirrored', type=float, default=0.5)
 @click.option('--genome_version', help = '"hg19" or "hg38"', default="hg19")
+@click.option('--prop_simplify', default=0, type = float)
 @click.option('--seed', help = 'Random seed', type=int, default=0)
 @click.option('--output', '-o', help='Output filename')
-def main(orig_genome, event_sizes, prop_mirrored, prop_focal_mirrored, genome_version, seed, output):
+def main(orig_genome, event_sizes, prop_mirrored, prop_focal_mirrored, prop_simplify, genome_version, seed, output):
     genome = pd.read_table(orig_genome).rename(columns={'#CHR':'chr', 'START':'start', 'END':'end'})
     event_sizes = [int(a) for a in event_sizes.split(',')]
     
     centromeres_file = f'/n/fs/ragr-data/datasets/ref-genomes/centromeres/{genome_version}.centromeres.txt'
     chr2centro = load_centromeres(centromeres_file)
     
+    if prop_simplify > 0:
+        genome = simplify_genome(genome, prop_remove = prop_simplify)
     result = inject_events(genome, event_sizes, chr2centro,
                            seed=seed, prop_mirrored=prop_mirrored,
                            prop_focal_mirrored=prop_focal_mirrored)

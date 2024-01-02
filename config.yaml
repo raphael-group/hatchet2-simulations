@@ -1,7 +1,7 @@
 chromosomes: ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7',
               'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14',
               'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
-manifest: 'manifest1.tsv'
+manifest: 'manifest3_simplify.tsv'
 
-sim_data_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/data'
-sim_results_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/results/'
+sim_data_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/smoothing/data'
+sim_results_dir: '/n/fs/ragr-research/projects/hatchet2-results/newsims/smoothing/results/'
