@@ -56,7 +56,7 @@ rule simulate_genome:
         os.path.join(sim_data_dir, 'simulated_genome{id}.tsv'),
     shell: 
         """
-        python3 scripts/simulate_genome.py {input.genome_file} --event_sizes {params.events_string} --prop_mirrored {params.prop_mirrored} --prop_focal_mirrored {params.prop_focal_mirrored} --prop_simplify {params.prop_simplify} --genome_version {genome_version} --seed {params.seed} --output {output}
+        python3 scripts/simulate_genome.py {input.genome_file} --n_clones {n_clones} --event_sizes {params.events_string} --prop_mirrored {params.prop_mirrored} --prop_focal_mirrored {params.prop_focal_mirrored} --prop_simplify {params.prop_simplify} --genome_version {genome_version} --seed {params.seed} --output {output}
         """
 
 rule sample_chromosome:

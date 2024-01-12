@@ -42,8 +42,8 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write(f'output={work_dir}\n\n')
         
         f.write('[combine_counts]\n')
-        f.write('msr=1500\n')
-        f.write('mtr=1500\n\n')
+        f.write('msr=300\n')
+        f.write('mtr=300\n\n')
 
         f.write('[genotype_snps]\n')
         f.write('reference_version=hg19\n')
@@ -51,10 +51,10 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write('snps=/n/fs/ragr-data/datasets/dbSNP/hg37.vcf.gz\n\n')
 
         f.write('[cluster_bins]\n')
-        f.write('minK=35\n')
-        f.write('maxK=100\n')
-        f.write('diploidbaf=0.07\n')
-        f.write('tau=1e-4\n\n')
+        f.write('minK=40\n')
+        f.write('maxK=60\n')
+        f.write('diploidbaf=0.05\n')
+        f.write('tau=1e-8\n')
 
         f.write('[download_panel]\n')
         f.write('refpaneldir=/n/fs/ragr-data/datasets/phasing-panels/\n\n')
@@ -63,7 +63,7 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write('solver=cpp\n')
         f.write(f'diploidcmax={maxcn_diploid}\n')
         f.write(f'tetraploidcmax={maxcn_tetraploid}\n')
-        f.write(f'clones={min_clones},{max_clones}\n')
+        f.write(f'clones={min_clones+1},{max_clones+1}\n')
         
     if not os.path.exists(os.path.join(work_dir, 'phase')):
         os.makedirs(os.path.join(work_dir, 'phase'))

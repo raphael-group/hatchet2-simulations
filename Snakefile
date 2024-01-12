@@ -8,15 +8,16 @@ manifest.id = manifest.id.astype(str)
 sim_data_dir = config['sim_data_dir']
 sim_results_dir = config['sim_results_dir']
 intermediate_dir = os.path.join(sim_data_dir, 'intermediate')
-analysis_dir = '/n/fs/ragr-research/projects/hatchet2-results/newsims/analysis'
+analysis_dir = config['analysis_dir']
+n_clones = config['n_clones']
 
 # HATCHet2 binning parameters
 min_snpcov_reads = 1500
 min_total_reads = 1500
 
 # solving parameters
-min_clones = 2
-max_clones = 4
+min_clones = 1
+max_clones = 1
 diploid_cmax = 6
 tetraploid_cmax = 14
 
@@ -29,20 +30,20 @@ normal_coverage = 30
 tumor_coverage = 80
 
 simulation_ids = manifest['id'].unique()
-hatchet_versions = ['hatchet1', 'hatchet2']
+#hatchet_versions = ['hatchet1', 'hatchet2']
+hatchet_versions = ['hatchet2']
 
 rule all:
     input:
         # input files
-        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
-        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
-        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
+        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
+        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
+        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
+        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'tumor.1bed'), id=simulation_ids),
+        # expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'normal.1bed'), id=simulation_ids),
         expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'tumor.1bed'), id=simulation_ids),
         expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'baf', 'normal.1bed'), id=simulation_ids),
         expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'total.tsv'), id=simulation_ids),
-        
-        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'tumor.1bed'), id=simulation_ids),
-        expand(os.path.join(sim_results_dir, 'hatchet1', '{id}', 'rdr', 'normal.1bed'), id=simulation_ids),
         
         expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', 'samples.txt'), id=simulation_ids),
         expand(os.path.join(sim_results_dir, 'hatchet2', '{id}', 'rdr', '{chromosome}.total.gz'), chromosome=chromosomes, id=simulation_ids),

@@ -38,6 +38,7 @@ def ascn_error_per_base(gt, inf, max_gt_segment_size=np.inf, mirrored_only = Fal
     if mirrored_only:
         gt = gt[gt.is_mirrored]
         if len(gt) == 0:
+            return -1
             raise ValueError("Flag 'mirrored_only' was set but there are no mirrored segments in this genome")
     chromosomes = gt['#CHR'].unique()
     n_clones_inf = max([i for i in range(20) if f'cn_clone{i}' in inf])
@@ -180,6 +181,7 @@ def precision_recall(joint_seg, mirrored_only = False, max_gt_segment_size = np.
     if mirrored_only:
         joint_seg = joint_seg[joint_seg.gt_is_mirrored]
         if len(joint_seg) == 0:
+            return -1, -1, -1
             raise ValueError("Flag 'mirrored_only' was set but there are no mirrored segments in this genome")
             
     n_clones_inf = max([i for i in range(20) if f'cn_clone{i}' in joint_seg])
@@ -256,16 +258,23 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     e_small = ascn_error_per_base(genome, bbc, max_gt_segment_size = 1e6)
     pra_small = precision_recall(joint, max_gt_segment_size = 1e6)
 
+    #s25177s025_liquid_3clones_purity5_eventsA_0
     tkns = [a for a in simkey.split('_') if len(a) > 0] # account for double-underscore and single-underscore
     if tkns[0][0] == 'n':
         tkns = tkns[1:]
     dataset_id = tkns[0]
     liquidsolid = tkns[1]    
     n_clones = int(tkns[2][0])
-    n_samples = int(tkns[3][0])
-    mixture_id = int(tkns[4])
-    events_id = tkns[5][-1]
-    seed = int(tkns[6])
+    if tkns[3].startswith('purity'):
+        mixture_id = int(tkns[3][-1])
+        n_samples = 2
+        events_id = tkns[4][-1]
+        seed = int(tkns[5])
+    else:
+        n_samples = int(tkns[3][0])
+        mixture_id = int(tkns[4])
+        events_id = tkns[5][-1]
+        seed = int(tkns[6])
     
     method = results_file.split(os.sep)[-4]
     

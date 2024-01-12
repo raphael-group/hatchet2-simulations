@@ -64,5 +64,5 @@ rule analyze_results:
         metrics_json=os.path.join(analysis_dir, 'metrics', '{hatchet_version}__{id}.json'),
     shell:
         """
-        python scripts/analyze_results.py {input} --joint_df_out {output.joint_df} --stats_out {output.metrics_json}
+        python scripts/analyze_results.py {input} --joint_df_out {output.joint_df} --stats_out {output.metrics_json} --simdata_dir {sim_data_dir}
         """

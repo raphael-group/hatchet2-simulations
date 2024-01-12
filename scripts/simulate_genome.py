@@ -188,14 +188,18 @@ def simplify_genome(genome, prop_remove = 0.5):
 @click.command()
 @click.argument('orig_genome')
 @click.option('--event_sizes', help = 'Comma-separated list of focal event sizes to inject')
+@click.option('--n_clones', help = 'Number of tumor clones (default: use number in tumor genome)', default=-1, type=int)
 @click.option('--prop_mirrored', help = 'Proportion of ALL segments that are mirrored', type=float, default=0.2)
 @click.option('--prop_focal_mirrored', help = 'Proportion of injected focal segments that are mirrored', type=float, default=0.5)
 @click.option('--genome_version', help = '"hg19" or "hg38"', default="hg19")
 @click.option('--prop_simplify', default=0, type = float)
 @click.option('--seed', help = 'Random seed', type=int, default=0)
 @click.option('--output', '-o', help='Output filename')
-def main(orig_genome, event_sizes, prop_mirrored, prop_focal_mirrored, prop_simplify, genome_version, seed, output):
+def main(orig_genome, n_clones, event_sizes, prop_mirrored, prop_focal_mirrored, prop_simplify, genome_version, seed, output):
     genome = pd.read_table(orig_genome).rename(columns={'#CHR':'chr', 'START':'start', 'END':'end'})
+    if n_clones is not None and n_clones > 0:
+        assert n_clones <= len(genome.columns) - 3
+        genome = genome.iloc[:, :n_clones + 3]
     event_sizes = [int(a) for a in event_sizes.split(',')]
     
     centromeres_file = f'/n/fs/ragr-data/datasets/ref-genomes/centromeres/{genome_version}.centromeres.txt'
