@@ -55,8 +55,8 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write('snps=/n/fs/ragr-data/datasets/dbSNP/hg37.vcf.gz\n\n')
 
         f.write('[cluster_bins]\n')
-        f.write('minK=30\n')
-        f.write('maxK=50\n')
+        f.write('minK=20\n')
+        f.write('maxK=40\n')
         f.write('diploidbaf=0.025\n')
         f.write('tau=1e-12\n')
 
