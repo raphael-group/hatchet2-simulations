@@ -284,6 +284,7 @@ def main(genome, chromosome, snps, sample_mixtures, tumor_coverage, normal_cover
     np.random.seed(seed)
     
     genome = pd.read_table(genome)
+    whole_genome = genome.copy()
     genome = genome[genome.chr == chromosome]
     assert len(genome) > 0, f'Found no bins in genome for chromosome: {chromosome}'
     
@@ -326,9 +327,16 @@ def main(genome, chromosome, snps, sample_mixtures, tumor_coverage, normal_cover
     samples = [normal_sample] + samples
     sample_names = [normal_name] + sample_names
 
-    # Compute expected sample haploid coverages
+    # Compute expected sample haploid coverages using the whole genome
+    whole_samples = [add_fcn(whole_genome, mixture) for mixture in mixtures]
+    normal_sample = whole_samples[0].copy()
+    normal_sample.fcn_a = 1
+    normal_sample.fcn_b = 1
+    normal_sample.fcn_total = 2
+    whole_samples = [normal_sample] + whole_samples
+
     sample_ploidies = []
-    for sample in samples:
+    for sample in whole_samples:
         sample['width'] = sample.end - sample.start
         sample_ploidies.append((sample.fcn_total * sample.width).sum() / sample.width.sum())
     
@@ -374,7 +382,7 @@ def main(genome, chromosome, snps, sample_mixtures, tumor_coverage, normal_cover
 
     # Sample SNP counts (same for both methods)
     bafdfs = sample_snps(chrpos, samples, [[1] + [0] * (len(mixtures[0]) - 1)] + mixtures, sample_names, expected_coverage)
-    normal_df = bafdfs[normal_name]\
+    normal_df = bafdfs[normal_name]
         
     if not os.path.exists(os.path.join(outdir, 'baf')):
         os.mkdir(os.path.join(outdir, 'baf'))

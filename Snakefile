@@ -11,13 +11,13 @@ intermediate_dir = os.path.join(sim_data_dir, 'intermediate')
 analysis_dir = config['analysis_dir']
 n_clones = config['n_clones']
 
-# HATCHet2 binning parameters
-min_snpcov_reads = 1500
-min_total_reads = 1500
+# HATCHet2 binning parameters (used when running HATCHet2)
+min_snpcov_reads = 500
+min_total_reads = 500
 
 # solving parameters
-min_clones = 1
-max_clones = 1
+min_clones = 2
+max_clones = 2
 diploid_cmax = 6
 tetraploid_cmax = 14
 
@@ -25,13 +25,13 @@ tetraploid_cmax = 14
 # global parameters
 genome_version = 'hg19'
 normal_name = 'normal'
-bin_width = 100000
+bin_width = 100000 # this is used when generating HATCHet1 input
 normal_coverage = 30
-tumor_coverage = 80
+tumor_coverage = 120
 
 simulation_ids = manifest['id'].unique()
-#hatchet_versions = ['hatchet1', 'hatchet2']
-hatchet_versions = ['hatchet2']
+hatchet_versions = ['hatchet1', 'hatchet2']
+#hatchet_versions = ['hatchet2']
 
 rule all:
     input:

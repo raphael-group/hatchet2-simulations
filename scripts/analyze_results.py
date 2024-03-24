@@ -242,8 +242,12 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     
     # read in ground truth simulated data
     simkey = results_file.split(os.sep)[-3]
-    genome = pd.read_table(os.path.join(simdata_dir, f'simulated_genome{simkey}.tsv')).rename(
-        columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
+    
+    #genome = pd.read_table(os.path.join(simdata_dir, f'simulated_genome{simkey}.tsv')).rename(
+    #    columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
+    genome = pd.read_table(f'/n/fs/ragr-research/projects/hatchet2-results/newsims/mirrored2/genomes/{simkey[:-4]}.tsv').rename(
+                                            columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
+    
     genome['is_mirrored'] = genome.apply(is_mirrored, axis = 1)
 
     # construct joint df
@@ -259,6 +263,7 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     pra_small = precision_recall(joint, max_gt_segment_size = 1e6)
 
     #s25177s025_liquid_3clones_purity5_eventsA_0
+    '''
     tkns = [a for a in simkey.split('_') if len(a) > 0] # account for double-underscore and single-underscore
     if tkns[0][0] == 'n':
         tkns = tkns[1:]
@@ -275,6 +280,28 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
         mixture_id = int(tkns[4])
         events_id = tkns[5][-1]
         seed = int(tkns[6])
+    '''
+    
+    '''
+    #dataset_n3_s4467_2_2
+    tkns = simkey.split('_')
+    dataset_id = simkey[2]
+    liquidsolid = ''
+    n_clones = 2
+    mixture_id = int(tkns[3])
+    seed = int(results_file.split(os.sep)[-3][-1])
+    n_samples = 3 if mixture_id == 1 else 2
+    events_id = 'A'
+    '''
+    #dataset_n2_tetraploid_2_0_1
+    tkns = simkey.split('_')
+    dataset_id = '_'.join(tkns[2:4])
+    liquidsolid = ''
+    n_clones = 2
+    mixture_id = int(tkns[4])
+    seed = int(tkns[5])
+    n_samples = 3 if mixture_id == 1 else 2
+    events_id = 'A'
     
     method = results_file.split(os.sep)[-4]
     

@@ -41,11 +41,12 @@ def main(work_dir, tumor_1bed, ini_filename, min_clones, max_clones, maxcn_diplo
         f.write('[cluster_bins_gmm]\n')
         f.write('initclusters=100\n\n')
         
+        
         f.write('[compute_cn]\n')
         f.write('solver=cpp\n')
         f.write(f'diploidcmax={maxcn_diploid}\n')
         f.write(f'tetraploidcmax={maxcn_tetraploid}\n')
-        f.write(f'clones={min_clones},{max_clones}\n')
+        f.write(f'clones={min_clones+1},{max_clones+1}\n')
         
 if __name__ == '__main__':
     main()

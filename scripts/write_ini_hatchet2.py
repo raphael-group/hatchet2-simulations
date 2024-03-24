@@ -10,10 +10,14 @@ from shutil import copy
 @click.option('--ini_filename', help='Filename for output hatchet.ini files')
 @click.option('--phase_file', help='File containing phasing results for these SNPs')
 @click.option('--min_clones', help="Minimum number of clones for solver", default=2)
+@click.option('--msr', help="Minimum number of SNP-covering reads per bin", default=1000)
+@click.option('--mtr', help="Minimum number of total reads per bin", default=1000)
+
 @click.option('--max_clones', help="Maximum number of clones for solver", default=4)
 @click.option('--maxcn_diploid', help="Minimum copy number for diploid solutions", default=6)
 @click.option('--maxcn_tetraploid', help="Maximum number of clones for tetraploid solutions", default=14)
-def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones, maxcn_diploid, maxcn_tetraploid):
+def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones, maxcn_diploid, maxcn_tetraploid,
+         msr, mtr):
     assert min_clones <= max_clones, (min_clones, max_clones)
     assert min_clones > 0, min_clones
     assert maxcn_diploid >= 2, maxcn_diploid
@@ -42,8 +46,8 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write(f'output={work_dir}\n\n')
         
         f.write('[combine_counts]\n')
-        f.write('msr=300\n')
-        f.write('mtr=300\n\n')
+        f.write(f'msr={msr}\n')
+        f.write(f'mtr={mtr}\n\n')
 
         f.write('[genotype_snps]\n')
         f.write('reference_version=hg19\n')
@@ -51,10 +55,10 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write('snps=/n/fs/ragr-data/datasets/dbSNP/hg37.vcf.gz\n\n')
 
         f.write('[cluster_bins]\n')
-        f.write('minK=40\n')
-        f.write('maxK=60\n')
-        f.write('diploidbaf=0.05\n')
-        f.write('tau=1e-8\n')
+        f.write('minK=30\n')
+        f.write('maxK=50\n')
+        f.write('diploidbaf=0.025\n')
+        f.write('tau=1e-12\n')
 
         f.write('[download_panel]\n')
         f.write('refpaneldir=/n/fs/ragr-data/datasets/phasing-panels/\n\n')
