@@ -16,10 +16,10 @@ min_snpcov_reads = 500
 min_total_reads = 500
 
 # solving parameters
-min_clones = 2
+min_clones = 2 # actual number of clones, so nclones argument gets this value +1 for normal
 max_clones = 2
-diploid_cmax = 6
-tetraploid_cmax = 14
+diploid_cmax = 5
+tetraploid_cmax = 10
 
 
 # global parameters

@@ -245,7 +245,7 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     
     #genome = pd.read_table(os.path.join(simdata_dir, f'simulated_genome{simkey}.tsv')).rename(
     #    columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
-    genome = pd.read_table(f'/n/fs/ragr-research/projects/hatchet2-results/newsims/mirrored2/genomes/{simkey[:-4]}.tsv').rename(
+    genome = pd.read_table(f'/n/fs/ragr-research/projects/hatchet2-results/newsims/mirrored4/genomes/{simkey[:-4]}.tsv').rename(
                                             columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
     
     genome['is_mirrored'] = genome.apply(is_mirrored, axis = 1)
