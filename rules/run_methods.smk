@@ -8,11 +8,12 @@ rule write_ini_hatchet1:
         tumor_1bed = os.path.join(sim_results_dir, 'hatchet1', '{id}', 'baf', 'tumor.1bed'),
     params:
         work_dir = os.path.join(sim_results_dir, 'hatchet1', '{id}'),
+        is_tetraploid = (1 if 'tetraploid' in '{id}' else 0),
     output:
         ini_file = os.path.join(sim_results_dir, 'hatchet1', '{id}', 'hatchet.ini'),
     shell:
         """ 
-        python scripts/write_ini_hatchet1.py --tumor_1bed {input.tumor_1bed} --work_dir {params.work_dir} --ini_filename {output.ini_file} --min_clones {min_clones} --max_clones {max_clones} --maxcn_diploid {diploid_cmax} --maxcn_tetraploid {tetraploid_cmax}
+        python scripts/write_ini_hatchet1.py --tumor_1bed {input.tumor_1bed} --work_dir {params.work_dir} --ini_filename {output.ini_file} --min_clones {min_clones} --max_clones {max_clones} --maxcn_diploid {diploid_cmax} --maxcn_tetraploid {tetraploid_cmax} --is_tetraploid {params.is_tetraploid}
         """
 
 rule write_ini_hatchet2:
@@ -21,11 +22,12 @@ rule write_ini_hatchet2:
         phase_file = _get_phase_file
     params:
         work_dir = os.path.join(sim_results_dir, 'hatchet2', '{id}'),
+        is_tetraploid = (1 if 'tetraploid' in '{id}' else 0),
     output:
         ini_file = os.path.join(sim_results_dir, 'hatchet2', '{id}', 'hatchet.ini'),
     shell:
         """ 
-        python scripts/write_ini_hatchet2.py --tumor_1bed {input.tumor_1bed} --work_dir {params.work_dir} --ini_filename {output.ini_file} --phase_file {input.phase_file} --min_clones {min_clones} --max_clones {max_clones} --maxcn_diploid {diploid_cmax} --maxcn_tetraploid {tetraploid_cmax} --msr {min_snpcov_reads} --mtr {min_total_reads}
+        python scripts/write_ini_hatchet2.py --tumor_1bed {input.tumor_1bed} --work_dir {params.work_dir} --ini_filename {output.ini_file} --phase_file {input.phase_file} --min_clones {min_clones} --max_clones {max_clones} --maxcn_diploid {diploid_cmax} --maxcn_tetraploid {tetraploid_cmax} --msr {min_snpcov_reads} --mtr {min_total_reads} --is_tetraploid {params.is_tetraploid}
         """
 
 rule run_hatchet:

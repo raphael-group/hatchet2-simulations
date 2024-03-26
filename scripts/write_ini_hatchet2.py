@@ -12,12 +12,12 @@ from shutil import copy
 @click.option('--min_clones', help="Minimum number of clones for solver", default=2)
 @click.option('--msr', help="Minimum number of SNP-covering reads per bin", default=1000)
 @click.option('--mtr', help="Minimum number of total reads per bin", default=1000)
-
 @click.option('--max_clones', help="Maximum number of clones for solver", default=4)
 @click.option('--maxcn_diploid', help="Minimum copy number for diploid solutions", default=6)
 @click.option('--maxcn_tetraploid', help="Maximum number of clones for tetraploid solutions", default=14)
+@click.option('--is_tetraploid', help="1 if instances is tetraploid, -1 if diploid", default=0)
 def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones, maxcn_diploid, maxcn_tetraploid,
-         msr, mtr):
+         msr, mtr, is_tetraploid):
     assert min_clones <= max_clones, (min_clones, max_clones)
     assert min_clones > 0, min_clones
     assert maxcn_diploid >= 2, maxcn_diploid
@@ -68,6 +68,11 @@ def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones,
         f.write(f'diploidcmax={maxcn_diploid}\n')
         f.write(f'tetraploidcmax={maxcn_tetraploid}\n')
         f.write(f'clones={min_clones+1},{max_clones+1}\n')
+        if is_tetraploid == -1:
+            f.write('diploid=True\n')
+        elif is_tetraploid == 1:
+             f.write('tetraploid=True\n')
+           
         
     if not os.path.exists(os.path.join(work_dir, 'phase')):
         os.makedirs(os.path.join(work_dir, 'phase'))
