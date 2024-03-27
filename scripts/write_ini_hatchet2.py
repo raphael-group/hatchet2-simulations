@@ -15,14 +15,20 @@ from shutil import copy
 @click.option('--max_clones', help="Maximum number of clones for solver", default=4)
 @click.option('--maxcn_diploid', help="Minimum copy number for diploid solutions", default=6)
 @click.option('--maxcn_tetraploid', help="Maximum number of clones for tetraploid solutions", default=14)
-@click.option('--is_tetraploid', help="1 if instances is tetraploid, -1 if diploid", default=0)
 def main(work_dir, tumor_1bed, ini_filename, phase_file, min_clones, max_clones, maxcn_diploid, maxcn_tetraploid,
-         msr, mtr, is_tetraploid):
+         msr, mtr):
     assert min_clones <= max_clones, (min_clones, max_clones)
     assert min_clones > 0, min_clones
     assert maxcn_diploid >= 2, maxcn_diploid
     assert maxcn_tetraploid >= 4, maxcn_tetraploid
     df = pd.read_table(tumor_1bed, names = ['chr', 'pos', 'sample', 'ref', 'alt'])    
+    
+    if 'tetraploid' in work_dir:
+        is_tetraploid = 1
+    elif 'diploid' in work_dir:
+        is_tetraploid = -1
+    else:
+        is_tetraploid = 0
     
     with open(ini_filename, 'w') as f:
         f.write('[run]\n')
