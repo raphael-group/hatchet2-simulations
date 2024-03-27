@@ -213,6 +213,88 @@ def precision_recall(joint_seg, mirrored_only = False, max_gt_segment_size = np.
     
     return p_sum / total_length, r_sum / total_length, acc_sum / total_length
 
+def bgreater(cn):
+    a, b = cn.split('|')
+    return int(b) > int(a)
+
+def ascn_error_per_base_mirrored(joint_seg, debug = False):
+    inf_clone_cols = [f'cn_clone{i}' for i in range(20) if f'cn_clone{i}' in joint_seg.columns]
+
+    errsum = 0
+    errdenom = 0
+
+    for _, r in joint_seg.iterrows():
+        true_u = sample2props(r.SAMPLE)
+
+        true_cn_props = defaultdict(lambda:0)
+        for i,p in enumerate(true_u[1:]):
+            cn = r[f'gt_cn_clone{i + 1}']
+            if bgreater(cn):
+                true_cn_props[cn] += p 
+        true_cn_props['1|1'] += true_u[0]
+
+        inf_cn_props = defaultdict(lambda:0)
+        for c in inf_clone_cols:
+            cn = r[c]
+            if bgreater(cn):
+                inf_cn_props[cn] += r[f'u_' + c[3:]]
+        inf_cn_props['1|1'] += r.u_normal
+
+        if debug:
+            print(true_cn_props.keys(), inf_cn_props.keys())
+
+        biggest_diff = 0
+        for state, prop1 in true_cn_props.items():
+            prop2 = inf_cn_props[state] if state in inf_cn_props else 0
+            my_diff = abs(prop1 - prop2)
+            if my_diff > biggest_diff:
+                biggest_diff = my_diff
+
+        for state, prop2 in inf_cn_props.items():
+            prop1 = true_cn_props[state] if state in true_cn_props else 0
+            my_diff = abs(prop1 - prop2)
+            if my_diff > biggest_diff:
+                biggest_diff = my_diff      
+
+        errsum += biggest_diff * r.OVERLAP
+        errdenom += r.OVERLAP
+    return errsum / errdenom
+
+def precision_recall_mirrored(joint_seg, max_gt_segment_size = np.inf):
+    inf_clone_cols = [f'cn_clone{i}' for i in range(20) if f'cn_clone{i}' in joint_seg.columns]
+    gt_clone_cols = [f'gt_cn_clone{i}' for i in range(20) if f'gt_cn_clone{i}' in joint_seg.columns]
+
+    p_sum = 0
+    r_sum = 0
+    acc_sum = 0
+    
+    p_length = 0
+    r_length = 0
+    total_length = 0
+    
+    for _, r in joint_seg.iterrows():
+        if r.gt_segment_size <= max_gt_segment_size:
+            inf_cns = set([cn for cn in r[inf_clone_cols] if bgreater(cn)])
+            gt_cns = set([cn for cn in r[gt_clone_cols] if bgreater(cn)])
+            
+            recovered = len(inf_cns.intersection(gt_cns))
+            all_states = len(inf_cns.union(gt_cns))
+            p_denom = len(inf_cns)
+            r_denom = len(gt_cns)
+
+            if p_denom > 0:
+                p_sum += r.OVERLAP * (recovered / p_denom)
+                p_length += r.OVERLAP
+            if r_denom > 0:
+                r_sum += r.OVERLAP * (recovered / r_denom)
+                r_length += r.OVERLAP            
+            if all_states > 0:
+                acc_sum += r.OVERLAP * (recovered / all_states)
+                total_length += r.OVERLAP
+
+    
+    return p_sum / p_length, r_sum / r_length, acc_sum / total_length
+
 def split_cn(row):
     # Convert from columns with CN strings to integerCN arrays 
     a = []
@@ -245,7 +327,7 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     
     #genome = pd.read_table(os.path.join(simdata_dir, f'simulated_genome{simkey}.tsv')).rename(
     #    columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
-    genome = pd.read_table(f'/n/fs/ragr-research/projects/hatchet2-results/newsims/mirrored6/genomes/{simkey[:-4]}.tsv').rename(
+    genome = pd.read_table(f'/n/fs/ragr-research/projects/hatchet2-results/newsims/mirrored7/genomes/{simkey[:-4]}.tsv').rename(
                                             columns = {'chr':'#CHR', 'start':'START', 'end':'END'})
     
     genome['is_mirrored'] = genome.apply(is_mirrored, axis = 1)
@@ -257,8 +339,8 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     # compute metrics
     e = ascn_error_per_base(genome, bbc)
     pra = precision_recall(joint)
-    e_mirrored = ascn_error_per_base(genome, bbc, mirrored_only = True)
-    pra_mirrored = precision_recall(joint, mirrored_only = True)
+    e_mirrored = ascn_error_per_base_mirrored(joint)
+    pra_mirrored = precision_recall_mirrored(joint)
     e_small = ascn_error_per_base(genome, bbc, max_gt_segment_size = 1e6)
     pra_small = precision_recall(joint, max_gt_segment_size = 1e6)
 
@@ -298,9 +380,9 @@ def main(results_file, simdata_dir, joint_df_out, stats_out):
     dataset_id = '_'.join(tkns[2:4])
     liquidsolid = ''
     n_clones = 2
-    mixture_id = int(tkns[4])
-    seed = int(tkns[5])
-    n_samples = 3 if mixture_id == 1 else 2
+    mixture_id = int(tkns[5])
+    seed = int(tkns[4])
+    n_samples = 3 if mixture_id == 0 else 2
     events_id = 'A'
     
     method = results_file.split(os.sep)[-4]
