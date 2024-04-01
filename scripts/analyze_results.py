@@ -231,14 +231,14 @@ def ascn_error_per_base_mirrored(joint_seg, debug = False):
             cn = r[f'gt_cn_clone{i + 1}']
             if bgreater(cn):
                 true_cn_props[cn] += p 
-        true_cn_props['1|1'] += true_u[0]
-
+        if len(true_cn_props) == 0 or sum(true_cn_props.values()) == 0:
+            continue
+                
         inf_cn_props = defaultdict(lambda:0)
         for c in inf_clone_cols:
             cn = r[c]
             if bgreater(cn):
                 inf_cn_props[cn] += r[f'u_' + c[3:]]
-        inf_cn_props['1|1'] += r.u_normal
 
         if debug:
             print(true_cn_props.keys(), inf_cn_props.keys())
@@ -258,6 +258,7 @@ def ascn_error_per_base_mirrored(joint_seg, debug = False):
 
         errsum += biggest_diff * r.OVERLAP
         errdenom += r.OVERLAP
+
     return errsum / errdenom
 
 def precision_recall_mirrored(joint_seg, max_gt_segment_size = np.inf):
@@ -293,7 +294,7 @@ def precision_recall_mirrored(joint_seg, max_gt_segment_size = np.inf):
                 total_length += r.OVERLAP
 
     
-    return p_sum / p_length, r_sum / r_length, acc_sum / total_length
+    return p_sum / max(1, p_length), r_sum / max(1, r_length), acc_sum / max(1, total_length)
 
 def split_cn(row):
     # Convert from columns with CN strings to integerCN arrays 
