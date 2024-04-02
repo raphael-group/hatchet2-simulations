@@ -231,8 +231,6 @@ def ascn_error_per_base_mirrored(joint_seg, debug = False):
             cn = r[f'gt_cn_clone{i + 1}']
             if bgreater(cn):
                 true_cn_props[cn] += p 
-        if len(true_cn_props) == 0 or sum(true_cn_props.values()) == 0:
-            continue
                 
         inf_cn_props = defaultdict(lambda:0)
         for c in inf_clone_cols:
@@ -240,9 +238,12 @@ def ascn_error_per_base_mirrored(joint_seg, debug = False):
             if bgreater(cn):
                 inf_cn_props[cn] += r[f'u_' + c[3:]]
 
+        if len(true_cn_props) + len(inf_cn_props) == 0 or sum(true_cn_props.values()) + sum(inf_cn_props.values()) == 0:
+            continue
+                
         if debug:
             print(true_cn_props.keys(), inf_cn_props.keys())
-
+            
         biggest_diff = 0
         for state, prop1 in true_cn_props.items():
             prop2 = inf_cn_props[state] if state in inf_cn_props else 0
@@ -255,9 +256,11 @@ def ascn_error_per_base_mirrored(joint_seg, debug = False):
             my_diff = abs(prop1 - prop2)
             if my_diff > biggest_diff:
                 biggest_diff = my_diff      
-
+                      
         errsum += biggest_diff * r.OVERLAP
-        errdenom += r.OVERLAP
+        
+        # multiply by largest weight CN state = largest possible error for this segment
+        errdenom += max(list(inf_cn_props.values()) + list(true_cn_props.values())) * r.OVERLAP
 
     return errsum / errdenom
 
